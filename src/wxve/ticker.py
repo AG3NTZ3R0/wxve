@@ -2,14 +2,18 @@ from alpha_vantage.timeseries import TimeSeries
 import matplotlib.pyplot as plt
 
 
-class Ticker:
-    """Represents a ticker symbol."""
+class Stock:
+    """Represents a stock."""
 
-    def __init__(self):
+    def __init__(self, symbol, av_key):
         """Initialize attributes."""
-        self._ts = TimeSeries(key='8XEA9G8CY0GG1X7Z', output_format='pandas')
-        self.ts_data, self.ts_metadata = self._ts.get_daily(symbol='CDEV', outputsize='full')
+        self.symbol = symbol
+        self._ts = TimeSeries(key=av_key, output_format='pandas')
+        self._ts_data, self._ts_metadata = self._ts.get_daily(symbol=self.symbol, outputsize='full')
 
-    def gen_visual(self):
-        """Generate a visual representation of the ticker symbol."""
-
+    def gen_visual(self, style='seaborn'):
+        """Generate a visual representation of the stock."""
+        plt.style.use(style)
+        self._ts_data['4. close'].plot()
+        plt.title(f"Daily Time Series for {self.symbol}")
+        plt.show()
