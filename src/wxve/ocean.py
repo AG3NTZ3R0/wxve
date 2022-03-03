@@ -12,7 +12,3 @@ class Ocean:
     def gen_visual(self, style='seaborn'):
         """Generate a visual representation of the stock."""
         print(self.data.head())
-
-
-ocean = Ocean()
-ocean.gen_visual()
