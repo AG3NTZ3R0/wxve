@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 
 class Stock:
     """Represents a stock."""
-
     def __init__(self, symbol, av_key):
         """Initialize attributes."""
         self.symbol = symbol
