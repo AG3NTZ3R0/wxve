@@ -1,1 +1,1 @@
-from ticker import Stock
+from ticker import *
