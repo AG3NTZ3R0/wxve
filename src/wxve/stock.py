@@ -1,5 +1,5 @@
 import pandas as pd
-from plotly import graph_objects as go
+from plotly import graph_objs as go
 import requests
 
 
@@ -45,3 +45,6 @@ class Stock:
                                                           high=self.hist_df['high'],
                                                           close=self.hist_df['close'])])
         self.candlestick.update_layout(title=self.symbol, yaxis_title='Stock Price')
+
+EVA = Stock('EVA', 'd73bb60f82mshbe3e55c57b941abp1abe67jsn7d7492f26dee')
+EVA.candlestick.show()
