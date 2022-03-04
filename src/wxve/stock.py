@@ -1,4 +1,5 @@
 import pandas as pd
+import plotly.graph_objects as go
 import requests
 
 
@@ -9,7 +10,7 @@ class Stock:
         """
         Initialize attributes.
         """
-        self.symbol = symbol
+        self.symbol = symbol.upper()
         self._api_url = "https://yh-finance.p.rapidapi.com/stock/v3/get-chart"
         self._api_headers = {
             'x-rapidapi-host': "yh-finance.p.rapidapi.com",
@@ -29,9 +30,18 @@ class Stock:
         self._raw_data = self._response.json()
 
         self._div_data = list(self._raw_data['chart']['result'][0]['events']['dividends'].values())
-        self._div_df = pd.DataFrame.from_records(self._div_data)
-        self._div_df['date'] = pd.to_datetime(self._div_df['date'], unit='s')
+        self.div_df = pd.DataFrame.from_records(self._div_data)
+        self.div_df['date'] = pd.to_datetime(self.div_df['date'], unit='s')
 
         self._hist_data = self._raw_data['chart']['result'][0]['indicators']['quote'][0]
-        self._hist_df = pd.DataFrame.from_dict(self._hist_data)
-        self._hist_df = self._hist_df[['volume', 'open', 'low', 'high', 'close']]
+        self.hist_df = pd.DataFrame.from_dict(self._hist_data)
+        self.hist_df['date'] = self._raw_data['chart']['result'][0]['timestamp']
+        self.hist_df['date'] = pd.to_datetime(self.hist_df['date'], unit='s')
+        self.hist_df = self.hist_df[['date', 'volume', 'open', 'low', 'high', 'close']]
+
+        self.candlestick = go.Figure(data=[go.Candlestick(x=self.hist_df['date'],
+                                                          open=self.hist_df['open'],
+                                                          low=self.hist_df['low'],
+                                                          high=self.hist_df['high'],
+                                                          close=self.hist_df['close'])])
+        self.candlestick.update_layout(title=self.symbol, yaxis_title='Stock Price')
