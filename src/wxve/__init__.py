@@ -1,2 +1,2 @@
-import stock
-import stockset
+import wxve.stock
+import wxve.stockset
