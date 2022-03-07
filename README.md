@@ -1,6 +1,6 @@
 # wxve
 
-A stock package that equips objects with the information required to streamline analysis.
+A stock analysis package in Python that equips objects with the information required to streamline operations.
 
 ## Install
 ```shell
@@ -14,9 +14,9 @@ https://rapidapi.com/apidojo/api/yh-finance/
 
 ## Tutorial
 ```python
-import wxve.stock as xs
+import wxve as x
 
-IBM = xs.Stock('IBM', 'YOUR_API_KEY')
+IBM = x.Stock('IBM', 'YOUR_API_KEY')
 
 IBM.candlestick.show()
 
@@ -24,10 +24,10 @@ print(IBM.div_df)
 print(IBM.hist_df)
 ```
 ```python
-import wxve.stockset as xss
+import wxve as x
 
 stock_list = ['IBM', 'INTC', 'NVDA']
-ai_chip_makers = xss.StockSet(stock_list, 'YOUR_API_KEY') 
+ai_chip_makers = x.StockSet(stock_list, 'YOUR_API_KEY') 
 
 ai_chip_makers.stocks['IBM'].candlestick.show()
 
