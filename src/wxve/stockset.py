@@ -1,6 +1,3 @@
-from stock import Stock
-
-
 class StockSet:
     """Represents a series of stocks."""
 
