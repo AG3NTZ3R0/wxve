@@ -38,7 +38,7 @@ class Stock:
         self._hist_data = self._raw_data['chart']['result'][0]['indicators']['quote'][0]
         self.hist_df = pd.DataFrame.from_dict(self._hist_data)
         self.hist_df['date'] = self._raw_data['chart']['result'][0]['timestamp']
-        self.hist_df['date'] = pd.to_datetime(self.hist_df['date'], unit='s')
+        self.hist_df['date'] = pd.to_datetime(self.hist_df['date'], unit='s').dt.date
         self.hist_df = self.hist_df[['date', 'volume', 'open', 'low', 'high', 'close']]
 
         self.candlestick = go.Figure(data=[go.Candlestick(x=self.hist_df['date'],
