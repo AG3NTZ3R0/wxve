@@ -30,7 +30,7 @@ class Stock:
         self._raw_data = self._response.json()
 
         if 'events' in self._raw_data['chart']['result'][0]:
-            if 'dividends' in self._raw_data['chart']['results'][0]['events']:
+            if 'dividends' in self._raw_data['chart']['result'][0]['events']:
                 self._div_data = list(self._raw_data['chart']['result'][0]['events']['dividends'].values())
                 self.div_df = pd.DataFrame.from_records(self._div_data)
                 self.div_df['date'] = pd.to_datetime(self.div_df['date'], unit='s')
