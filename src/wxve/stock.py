@@ -29,9 +29,10 @@ class Stock:
         self._response = requests.request('GET', self._api_url, headers=self._api_headers, params=self._api_query)
         self._raw_data = self._response.json()
 
-        self._div_data = list(self._raw_data['chart']['result'][0]['events']['dividends'].values())
-        self.div_df = pd.DataFrame.from_records(self._div_data)
-        self.div_df['date'] = pd.to_datetime(self.div_df['date'], unit='s')
+        if 'events' in self._raw_data['chart']['result'][0]:
+            self._div_data = list(self._raw_data['chart']['result'][0]['events']['dividends'].values())
+            self.div_df = pd.DataFrame.from_records(self._div_data)
+            self.div_df['date'] = pd.to_datetime(self.div_df['date'], unit='s')
 
         self._hist_data = self._raw_data['chart']['result'][0]['indicators']['quote'][0]
         self.hist_df = pd.DataFrame.from_dict(self._hist_data)
