@@ -6,7 +6,7 @@ import requests
 class Stock:
     """Represents a stock."""
 
-    def __init__(self, symbol, api_key, date_range='max', interval='1d', region='US'):
+    def __init__(self, symbol, api_key, date_range='10y', interval='1d', region='US'):
         """
         Initialize attributes.
         """
