@@ -33,7 +33,7 @@ class Stock:
             if 'dividends' in self._raw_data['chart']['result'][0]['events']:
                 self._div_data = list(self._raw_data['chart']['result'][0]['events']['dividends'].values())
                 self.div_df = pd.DataFrame.from_records(self._div_data)
-                self.div_df['date'] = pd.to_datetime(self.div_df['date'], unit='s')
+                self.div_df['date'] = pd.to_datetime(self.div_df['date'], unit='s').dt.date
 
         self._hist_data = self._raw_data['chart']['result'][0]['indicators']['quote'][0]
         self.hist_df = pd.DataFrame.from_dict(self._hist_data)
