@@ -1,4 +1,4 @@
-from wxve.stock import Stock
+from .stock import Stock
 
 
 class StockSet:

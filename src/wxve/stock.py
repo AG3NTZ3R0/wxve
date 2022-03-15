@@ -1,47 +1,41 @@
 import pandas as pd
 import plotly.graph_objects as go
-import requests
+import yh_finance as yhf
 
 
 class Stock:
     """Represents a stock."""
 
-    def __init__(self, symbol, api_key, date_range='10y', interval='1d', region='US'):
+    def __init__(self, symbol, dividend, api_key, time_range='10y', interval='1d', region='US'):
         """
         Initialize attributes.
         """
         self.symbol = symbol.upper()
-        self._api_url = "https://yh-finance.p.rapidapi.com/stock/v3/get-chart"
-        self._api_headers = {
-            'x-rapidapi-host': "yh-finance.p.rapidapi.com",
-            'x-rapidapi-key': api_key
-        }
-        self._api_query = {
-            'interval': interval,
-            'symbol': symbol,
-            'range': date_range,
-            'region': region,
-            'includePrePost': "false",
-            'useYfid': "true",
-            'includeAdjustedClose': "true",
-            'events': "capitalGain,div,split"
-        }
-        self._response = requests.request('GET', self._api_url, headers=self._api_headers, params=self._api_query)
-        self._raw_data = self._response.json()
+        self._json_resp_chart = yhf.get_chart(interval=interval,
+                                              symbol=self.symbol,
+                                              time_range=time_range,
+                                              region=region,
+                                              include_pre_post='false',
+                                              use_yahoo_id='true',
+                                              include_adj_close='true',
+                                              events='div,split',
+                                              api_key=api_key)
 
-        if 'events' in self._raw_data['chart']['result'][0]:
-            if 'dividends' in self._raw_data['chart']['result'][0]['events']:
-                self._div_data = list(self._raw_data['chart']['result'][0]['events']['dividends'].values())
-                self.div_df = pd.DataFrame.from_records(self._div_data)
-                self.div_df = self.div_df.rename(columns={'amount': 'div_amount'})
-                self.div_df['date'] = pd.to_datetime(self.div_df['date'], unit='s').dt.date
-                self.div_df['div_growth'] = self.div_df['div_amount'].diff()
-                self.div_df = self.div_df[['date', 'div_amount', 'div_growth']]
+        if dividend:
+            self._div_data = list(self._json_resp_chart['chart']['result'][0]['events']['dividends'].values())
+            self.div_df = pd.DataFrame.from_records(self._div_data).rename(columns={'amount': 'div_amount'})
+            self.div_df['date'] = pd.to_datetime(self.div_df['date'], unit='s').dt.date
 
-        self._hist_data = self._raw_data['chart']['result'][0]['indicators']['quote'][0]
+            self.div_df['div_growth'] = self.div_df['div_amount'].diff()
+
+            self.div_df = self.div_df[['date', 'div_amount', 'div_growth']]
+            self.div_df = self.div_df.fillna(0)
+
+        self._hist_data = self._json_resp_chart['chart']['result'][0]['indicators']['quote'][0]
         self.hist_df = pd.DataFrame.from_dict(self._hist_data)
-        self.hist_df['date'] = self._raw_data['chart']['result'][0]['timestamp']
+        self.hist_df['date'] = self._json_resp_chart['chart']['result'][0]['timestamp']
         self.hist_df['date'] = pd.to_datetime(self.hist_df['date'], unit='s').dt.date
+
         self.hist_df = self.hist_df[['date', 'volume', 'open', 'low', 'high', 'close']]
 
         self.candlestick = go.Figure(data=[go.Candlestick(x=self.hist_df['date'],
@@ -50,3 +44,10 @@ class Stock:
                                                           high=self.hist_df['high'],
                                                           close=self.hist_df['close'])])
         self.candlestick.update_layout(title=self.symbol, yaxis_title='Stock Price')
+
+
+if __name__ == '__main__':
+    EVA = Stock(symbol='IBM',
+                dividend=True,
+                api_key='d73bb60f82mshbe3e55c57b941abp1abe67jsn7d7492f26dee')
+    print(EVA.hist_df)
